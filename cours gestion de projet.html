@@ -1,0 +1,3044 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Projets et des Risques - Plateforme Interactive</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --border-radius: 10px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary: #ecf0f1;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #2c3e50;
+            --dark: #ecf0f1;
+            --gray: #7f8c8d;
+            --card-bg: #1a252f;
+            --text: #ecf0f1;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--light);
+            transition: var(--transition);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            width: 300px;
+            padding: 3px;
+        }
+
+        .progress-bar {
+            background: white;
+            height: 10px;
+            border-radius: 20px;
+            width: 25%;
+            transition: width 0.5s ease;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 20px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            top: 70px;
+            left: 0;
+            overflow-y: auto;
+            z-index: 900;
+            transition: var(--transition);
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-title {
+            padding: 15px 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .module-list {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .module-item {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .module-item.active {
+            background: var(--secondary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .module-item.completed::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .search-bar {
+            padding: 10px 15px;
+            margin: 0 15px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            background: var(--card-bg);
+            color: var(--text);
+            width: calc(100% - 30px);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .content-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .card.highlight {
+            border-left-color: var(--accent);
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .card.success {
+            border-left-color: var(--success);
+            background: rgba(39, 174, 96, 0.05);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            height: calc(100% - 10px);
+            width: 3px;
+            background: var(--secondary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--secondary);
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .mindmap-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .mindmap-center {
+            width: 100px;
+            height: 100px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .mindmap-node {
+            position: absolute;
+            background: var(--card-bg);
+            border: 2px solid var(--secondary);
+            border-radius: 20px;
+            padding: 15px;
+            width: 180px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            z-index: 20;
+        }
+
+        .mindmap-node.module1 { top: 20%; left: 15%; background: #e3f2fd; }
+        .mindmap-node.module2 { top: 10%; left: 40%; background: #e8f5e9; }
+        .mindmap-node.module3 { top: 25%; left: 70%; background: #fffde7; }
+        .mindmap-node.module4 { top: 50%; left: 80%; background: #f3e5f5; }
+        .mindmap-node.module5 { top: 75%; left: 70%; background: #e0f7fa; }
+        .mindmap-node.module6 { top: 85%; left: 40%; background: #fce4ec; }
+        .mindmap-node.module7 { top: 70%; left: 15%; background: #e8eaf6; }
+        .mindmap-node.module8 { top: 45%; left: 5%; background: #ffecb3; }
+
+        .mindmap-line {
+            position: absolute;
+            background: var(--secondary);
+            transform-origin: 0 0;
+            height: 2px;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .accordion-header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .accordion-header:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .accordion-header.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .accordion-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .accordion-content.show {
+            padding: 20px;
+            max-height: 1000px;
+        }
+
+        /* Table Styles */
+        .responsive-table {
+            overflow-x: auto;
+            margin: 25px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: var(--secondary);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover td {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            padding: 12px 15px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--secondary);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--secondary);
+            background: rgba(52, 152, 219, 0.1);
+            position: relative;
+        }
+
+        .quiz-option.selected::before {
+            content: '✓';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .quiz-feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback-correct {
+            background: rgba(39, 174, 96, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+            display: block;
+        }
+
+        .feedback-incorrect {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            display: block;
+        }
+
+        .hint-btn {
+            background: var(--warning);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--secondary);
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+        }
+
+        .stat-card.risks {
+            border-top-color: var(--accent);
+        }
+
+        .stat-card.progress {
+            border-top-color: var(--success);
+        }
+
+        .stat-card.next {
+            border-top-color: var(--warning);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--secondary);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .badge.earned {
+            background: var(--success);
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Interactive Elements */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dashed var(--secondary);
+            cursor: help;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0.3) 100%);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 100px);
+            gap: 5px;
+            max-width: 600px;
+            margin: 30px auto;
+            background: var(--card-bg);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .matrix-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .matrix-header {
+            background: var(--secondary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .risk-low { background: #27ae60; }
+        .risk-medium { background: #f39c12; }
+        .risk-high { background: #e74c3c; }
+        .risk-critical { background: #c0392b; }
+
+        .matrix-label {
+            position: absolute;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .matrix-x { 
+            bottom: -30px; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .matrix-y {
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            text-align: center;
+            width: 200px;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 300px;
+            height: 200px;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .flashcard-front {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: var(--card-bg);
+            color: var(--text);
+            transform: rotateY(180deg);
+            border: 2px solid var(--secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 220px;
+            }
+            .main-content {
+                margin-left: 220px;
+            }
+            .progress-container {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                top: 0;
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .mindmap-node {
+                width: 140px;
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+            .risk-matrix {
+                grid-template-rows: repeat(5, 70px);
+                max-width: 100%;
+            }
+            .flashcard-container {
+                width: 250px;
+                height: 170px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .header-actions, .quiz-options button, .no-print {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            body {
+                background: white;
+            }
+            .card, .content-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+        
+        /* Quiz Pagination */
+        .quiz-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        
+        .page-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .page-btn.active {
+            background: var(--accent);
+            transform: scale(1.15);
+        }
+        
+        .quiz-page {
+            display: none;
+        }
+        
+        .quiz-page.active {
+            display: block;
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">GP</div>
+            <div>
+                <h1>Gestion de Projets et des Risques</h1>
+                <p>Plateforme Interactive d'Apprentissage</p>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="globalProgress"></div>
+        </div>
+        <div class="header-actions">
+            <button class="btn" id="darkModeToggle">
+                <span class="no-dark">🌙 Mode Sombre</span>
+                <span class="dark">☀️ Mode Clair</span>
+            </button>
+            <button class="btn btn-primary" id="notesBtn">📝 Mes Notes</button>
+            <button class="btn btn-accent" id="exportBtn">📥 Exporter PDF</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <input type="text" class="search-bar" placeholder="Rechercher dans le cours..." id="courseSearch">
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">📝 Modules du Cours</div>
+                <ul class="module-list" id="moduleList">
+                    <li class="module-item active" data-module="home">🏠 Accueil</li>
+                    <li class="module-item" data-module="module1">1. Introduction à la Gestion de Projets</li>
+                    <li class="module-item" data-module="module2">2. Cycle de Vie d'un Projet</li>
+                    <li class="module-item" data-module="module3">3. Planification Stratégique</li>
+                    <li class="module-item" data-module="module4">4. Planification Technique</li>
+                    <li class="module-item" data-module="module5">5. Cadre Logique & Gestion des Risques</li>
+                    <li class="module-item" data-module="module6">6. Suivi et Évaluation</li>
+                    <li class="module-item" data-module="module7">7. Clôture de Projet</li>
+                    <li class="module-item" data-module="module8">8. Étude de Cas Pratique</li>
+                    <li class="module-item" data-module="evaluation">🎯 Évaluation Interactive</li>
+                    <li class="module-item" data-module="dashboard">📊 Tableau de Bord</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">🏆 Badges Acquis</div>
+                <div id="badgesContainer">
+                    <span class="badge">Introduction</span>
+                    <span class="badge">Cycle de Vie</span>
+                    <span class="badge risks">Gestion des Risques</span>
+                    <span class="badge">Cadre Logique</span>
+                    <span class="badge progress">+3 badges</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">⏱ Prochaines Échéances</div>
+                <div class="card next">
+                    <p><strong>Quiz Module 5</strong><br><small>Dans 2 jours</small></p>
+                    <p><strong>Étude de Cas</strong><br><small>Dans 5 jours</small></p>
+                    <p><strong>Évaluation Finale</strong><br><small>Dans 14 jours</small></p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Homepage Section -->
+            <section id="home" class="content-section active">
+                <h2 class="section-title">Bienvenue dans le Cours de Gestion de Projets et des Risques</h2>
+                
+                <div class="card">
+                    <h3>🎯 Objectifs Pédagogiques</h3>
+                    <ul>
+                        <li>Comprendre les fondements théoriques et historiques de la gestion de projets</li>
+                        <li>Maîtriser les différentes phases du cycle de vie d'un projet</li>
+                        <li>Savoir élaborer un cadre logique complet pour un projet</li>
+                        <li>Identifier, évaluer et mitiger les risques dans un projet</li>
+                        <li>Appliquer les connaissances à travers des études de cas réelles</li>
+                    </ul>
+                </div>
+                
+                <div class="card success">
+                    <h3>💡 Compétences à Acquérir</h3>
+                    <p>À l'issue de ce cours, vous serez capable de :</p>
+                    <ul>
+                        <li>Concevoir et planifier un projet de A à Z</li>
+                        <li>Élaborer un cadre logique avec indicateurs et hypothèses</li>
+                        <li>Mettre en place un système de suivi-évaluation efficace</li>
+                        <li>Gérer les risques et imprévus dans un projet</li>
+                        <li>Utiliser les outils modernes de gestion de projets (Gantt, PERT, matrices de risques)</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">🗺 Carte Mentale Interactive du Cours</h3>
+                <div class="mindmap-container">
+                    <div class="mindmap-center" id="mindmapCenter">GP&R</div>
+                    <div class="mindmap-node module1" data-module="module1">Introduction & Histoire</div>
+                    <div class="mindmap-node module2" data-module="module2">Cycle de Vie</div>
+                    <div class="mindmap-node module3" data-module="module3">Planification Stratégique</div>
+                    <div class="mindmap-node module4" data-module="module4">Planification Technique</div>
+                    <div class="mindmap-node module5" data-module="module5">Cadre Logique & Risques</div>
+                    <div class="mindmap-node module6" data-module="module6">Suivi & Évaluation</div>
+                    <div class="mindmap-node module7" data-module="module7">Clôture de Projet</div>
+                    <div class="mindmap-node module8" data-module="module8">Étude de Cas</div>
+                </div>
+                
+                <div class="card highlight">
+                    <h3>🚀 Commencez votre apprentissage</h3>
+                    <p>Cliquez sur un module dans le menu de gauche ou sur un nœud de la carte mentale ci-dessus pour commencer. Chaque module contient :</p>
+                    <ul>
+                        <li>Des explications claires et structurées</li>
+                        <li>Des schémas et visualisations interactives</li>
+                        <li>Des exemples concrets et études de cas</li>
+                        <li>Des quiz interactifs pour tester vos connaissances</li>
+                        <li>Des flashcards pour mémoriser les concepts clés</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Module 1: Introduction -->
+            <section id="module1" class="content-section">
+                <h2 class="section-title">1. Introduction à la Gestion de Projets</h2>
+                
+                <div class="card">
+                    <h3>🔍 Définitions Fondamentales</h3>
+                    <p><strong>Gérer</strong> c'est anticiper, planifier, mettre en œuvre et contrôler.</p>
+                    <p><strong>Gérer un projet</strong>, c'est conduire le projet avec prévoyance et proactivité en identifiant à l'avance les risques et les mesures de résolution.</p>
+                    <p><strong>La planification</strong> sous-entend les moyens et les actions selon un calendrier cohérent et logique.</p>
+                    <p><strong>La gestion de projet</strong> consiste à planifier, organiser, suivre et maîtriser tous les aspects d'un projet, de façon à atteindre les objectifs en respectant les coûts, les délais et les spécifications prédéfinies.</p>
+                    <p><strong>Le risque</strong> est un événement dont la survenance est incertaine et susceptible de compromettre la réussite du projet, de le retarder et/ou de créer des dommages importants.</p>
+                </div>
+                
+                <h3 class="section-subtitle">🕰 Évolution Historique</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Moyen Âge - XVIIe siècle</div>
+                        <div class="timeline-content">
+                            <p><strong>Projets architecturaux :</strong> Séparation progressive entre conception et exécution. Brunelleschi (1377-1446) invente la perspective et sépare clairement conception et exécution. Alberti définit l'architecture comme une "chose mentale" avec trois critères : <span class="tooltip">necessitas<span class="tooltip-text">Techniques, dépendance aux lois physiques</span></span>, <span class="tooltip">commoditas<span class="tooltip-text">Usages et fonctionnalités</span></span> et <span class="tooltip">voluptas<span class="tooltip-text">Esthétique et beauté</span></span>.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">XVIIe - XIXe siècle</div>
+                        <div class="timeline-content">
+                            <p><strong>Institutionnalisation :</strong> Émergence des ingénieurs (Perronet, Prony) et création de l'École des Ponts et Chaussées. Rationalisation administrative et scientifique de la gestion des projets. L'entrepreneur devient une figure clé du développement industriel (modèle Schumpeter).</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">1930 - 1950 (Degré Zéro)</div>
+                        <div class="timeline-content">
+                            <p><strong>Rationalisation :</strong> Grands projets étatiques (barrages, infrastructures). Problèmes de formulation d'objectifs publics, d'interaction entre institutions, d'analyse multicritère. Développement des projets coloniaux et tiers-mondistes. La gestion de projet s'enrichit de dimensions socioculturelles.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">1960 - 1980 (Degré Un)</div>
+                        <div class="timeline-content">
+                            <p><strong>Standardisation :</strong> Création du PMI (Project Management Institute) en 1969 et de l'AFITEP en 1982. Développement d'outils standardisés : WBS, PERT, Gantt, méthode des potentiels. Émergence de la "coûtenance" (contrôle simultané des écarts de budget et de planning). Le modèle standard devient dominant dans les projets d'ingénierie.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">1980 - 2000</div>
+                        <div class="timeline-content">
+                            <p><strong>Nouvelles approches :</strong> Développement de l'ingénierie concourante pour répondre aux limites du modèle séquentiel (taylorien). Métaphore du "rugby" contre la "course de relais". Émergence de la gestion de projet agile avec des cycles plus courts et une collaboration renforcée.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2000 - Aujourd'hui</div>
+                        <div class="timeline-content">
+                            <p><strong>Tendances actuelles :</strong> Planification ascendante (agile, Scrum) vs planification descendante (portefeuille de projets). Développement des TIC accélérant la mondialisation. La gestion de projet devient un modèle de management transversal dans toutes les organisations.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card highlight">
+                    <h3>💡 Concept Clé : Les Quatre Degrés de la Gestion de Projet</h3>
+                    <p><strong>Degré -1 :</strong> Pratiques non institutionnalisées (projets sous les Pharaons, Vauban)</p>
+                    <p><strong>Degré 0 :</strong> Autonomisation de la gestion de projet (années 1930-1950)</p>
+                    <p><strong>Degré 1 :</strong> Rationalisation et standardisation (années 1960-1980)</p>
+                    <p><strong>Degré 2 :</strong> Renouvellement avec l'ingénierie concourante et l'agilité (années 1980-présent)</p>
+                </div>
+                
+                <h3 class="section-subtitle">🌍 Utilité Sociale et Économique</h3>
+                <div class="card">
+                    <p>La gestion de projets permet :</p>
+                    <ul>
+                        <li>De structurer des initiatives complexes avec des ressources limitées</li>
+                        <li>D'optimiser l'allocation des ressources (humaines, financières, matérielles)</li>
+                        <li>De réduire les risques d'échec grâce à une planification rigoureuse</li>
+                        <li>De créer de la valeur économique et sociale à travers des réalisations concrètes</li>
+                        <li>De favoriser l'innovation par une approche structurée de la gestion du changement</li>
+                    </ul>
+                    <p class="highlight">Cas concret : AirBnB a utilisé une approche par projet pour transformer son modèle économique, passant d'un simple site de location de matelas à une plateforme mondiale de logements alternatifs.</p>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header">📚 En savoir plus sur l'histoire de la gestion de projets</div>
+                        <div class="accordion-content">
+                            <p>L'histoire de la gestion de projet est à la fois celle de pratiques peu ou pas institutionnalisées, puis celle de pratiques institutionnalisées. Entre les deux, la gestion de projet est devenue un modèle de management très diffusé dans les organisations.</p>
+                            <p>Aux origines, le projet architectural a marqué une étape quand les hommes se sont dotés d'outils leur permettant d'avoir la représentation intellectuelle prédictive d'un ouvrage encore à réaliser. C'est dans le domaine architectural qu'à la fin du Moyen âge, le "bricolage" se révèle de plus en plus inopérant.</p>
+                            <p>La figure de l'architecte se substitue progressivement à celle du maître maçon. L'architecte est à la fois véritable concepteur et maître d'œuvre de l'ouvrage. Il traduit en formes, en poids et en résistance les concepts théologiques proposés par le chapitre des chanoines et l'évêque.</p>
+                            <p>Après la Révolution française, l'objectif prioritaire est d'équiper le pays. L'expertise des architectes est contestée car les besoins et les programmes ont changé. On assiste alors à la naissance d'une approche très polytechnique avec des ingénieurs formés en architecture.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header">💡 Analogie Pédagogique : La Gestion de Projet comme Voyage</div>
+                        <div class="accordion-content">
+                            <p>Imaginez que gérer un projet est comme organiser un voyage complexe :</p>
+                            <ul>
+                                <li><strong>Conception :</strong> Choisir la destination, le budget, les dates (comme définir les objectifs du projet)</li>
+                                <li><strong>Planification :</strong> Réserver les vols, hôtels, activités (comme planifier les tâches et ressources)</li>
+                                <li><strong>Réalisation :</strong> Partir en voyage, adapter aux imprévus (météo, grèves)</li>
+                                <li><strong>Clôture :</strong> Rentrer, évaluer l'expérience, partager les photos</li>
+                            </ul>
+                            <p>Les risques ? Vol annulé, bagages perdus, mauvaise météo... Comme dans un projet, il faut anticiper et avoir des plans de secours !</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard1">
+                        <div class="flashcard-face flashcard-front">
+                            Qu'est-ce qu'un projet selon le PMI ?
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            Une entreprise temporaire visant à créer un produit et/ou un service unique
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Module 2: Cycle de Vie d'un Projet -->
+            <section id="module2" class="content-section">
+                <h2 class="section-title">2. Cycle de Vie d'un Projet</h2>
+                
+                <div class="card">
+                    <h3>🔄 Les Quatre Phases du Cycle de Vie</h3>
+                    <p>Tout projet, quels que soient sa taille, sa complexité et son domaine d'activité, suit un cycle de vie composé de quatre phases principales :</p>
+                    <ul>
+                        <li><strong>Conception :</strong> Définition des objectifs, étude de faisabilité, choix du chef de projet</li>
+                        <li><strong>Planification :</strong> Définition détaillée des tâches, des ressources, des délais et des coûts</li>
+                        <li><strong>Réalisation :</strong> Exécution des tâches, pilotage et gestion des imprévus</li>
+                        <li><strong>Clôture :</strong> Évaluation, capitalisation des connaissances et clôture administrative</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">1. Conception du Projet</h3>
+                <div class="card">
+                    <h4>Objectifs de la phase de conception :</h4>
+                    <ul>
+                        <li>Déterminer le but du projet</li>
+                        <li>Estimer les ressources, coûts et délais</li>
+                        <li>Définir le type d'organisation</li>
+                        <li>Choisir le chef de projet</li>
+                        <li>Estimer les risques</li>
+                        <li>Estimer la rentabilité</li>
+                    </ul>
+                    <p class="highlight">💡 Cette phase est cruciale : une mauvaise définition des objectifs ou une sous-estimation des risques peut compromettre le projet dès le départ.</p>
+                </div>
+                
+                <h3 class="section-subtitle">2. Planification du Projet</h3>
+                <div class="card">
+                    <h4>Objectifs de la phase de planification :</h4>
+                    <ul>
+                        <li>Engagement des hommes-clés</li>
+                        <li>Définition des responsabilités</li>
+                        <li>Détail des coûts et délais</li>
+                        <li>Planification globale</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Outils de Planification :</h4>
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Outil</th>
+                                    <th>Description</th>
+                                    <th>Utilité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Diagramme de Gantt</strong></td>
+                                    <td>Représentation visuelle des tâches dans le temps sous forme de barres horizontales</td>
+                                    <td>Visualiser l'enchaînement des tâches, les dépendances et le chemin critique</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Méthode PERT</strong></td>
+                                    <td>Réseau de tâches avec estimation des durées optimiste, pessimiste et la plus probable</td>
+                                    <td>Identifier le chemin critique et gérer les incertitudes sur les durées</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">3. Réalisation du Projet</h3>
+                <div class="card">
+                    <h4>Objectifs de la phase de réalisation :</h4>
+                    <ul>
+                        <li>Mise en place de l'organisation</li>
+                        <li>Exécution du travail</li>
+                        <li>Pilotage coûts – délais – spécifications</li>
+                        <li>Résolution de problèmes</li>
+                    </ul>
+                    <p>Pendant cette phase, le chef de projet doit :</p>
+                    <ul>
+                        <li>Coordonner l'équipe projet</li>
+                        <li>Assurer le suivi des tâches et des ressources</li>
+                        <li>Gérer les risques et les imprévus</li>
+                        <li>Communiquer régulièrement avec les parties prenantes</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">4. Clôture du Projet</h3>
+                <div class="card">
+                    <h4>Objectifs de la phase de clôture :</h4>
+                    <ul>
+                        <li>Analyser les écarts entre planifié et réalisé</li>
+                        <li>Mémoriser les opérations passées (capitalisation des connaissances)</li>
+                        <li>Évaluer le projet (résultats, processus, satisfaction des parties prenantes)</li>
+                    </ul>
+                    <p class="highlight">🔑 La clôture permet de tirer des enseignements pour les projets futurs et de célébrer les succès avec l'équipe.</p>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header">📊 Exemple de Diagramme de Gantt Simplifié</div>
+                        <div class="accordion-content">
+                            <div style="background:#f8f9fa;padding:15px;border-radius:8px;font-family:monospace;font-size:0.9rem;">
+                                Tâche 1: Conception .................|====|<br>
+                                Tâche 2: Planification ..............     |==========|<br>
+                                Tâche 3: Réalisation ................              |====================|<br>
+                                Tâche 4: Clôture ...................                                   |====|
+                            </div>
+                            <p style="margin-top:10px">Chaque barre représente la durée d'une tâche. Les dépendances sont indiquées par les alignements.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header">💡 Conseils pour une Bonne Gestion du Cycle de Vie</div>
+                        <div class="accordion-content">
+                            <ul>
+                                <li>Ne pas négliger la phase de conception : prendre le temps de bien définir les objectifs et les contraintes</li>
+                                <li>Impliquer les parties prenantes dès le début</li>
+                                <li>Prévoir des revues de phase entre chaque étape</li>
+                                <li>Adapter la rigueur de la gestion en fonction de la taille et de la complexité du projet</li>
+                                <li>Documenter les décisions et les enseignements à chaque phase</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Module 3: Planification Stratégique -->
+            <section id="module3" class="content-section">
+                <h2 class="section-title">3. Planification Stratégique et Organisationnelle</h2>
+                
+                <div class="card">
+                    <h3>🎯 Planification Stratégique du Projet</h3>
+                    <p>La planification stratégique définit la direction globale du projet et ses axes prioritaires :</p>
+                    <ul>
+                        <li><strong>Brainstorming des axes stratégiques :</strong> En équipe, identifier les orientations possibles</li>
+                        <li><strong>Sélection des axes réalistes :</strong> Évaluer la faisabilité et l'impact de chaque axe</li>
+                        <li><strong>Planification des axes stratégiques :</strong> Définir les étapes clés pour chaque axe prioritaire</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">🏢 Planification Organisationnelle</h3>
+                <div class="card">
+                    <h4>Définition du type d'organisation :</h4>
+                    <ul>
+                        <li><strong>Hiérarchique :</strong> Structure classique avec lignes de commandement claires</li>
+                        <li><strong>Divisionnaire :</strong> Organisation par divisions ou filiales autonomes</li>
+                        <li><strong>Matricielle :</strong> Double reporting (fonctionnel et projet)</li>
+                        <li><strong>Fonctionnelle :</strong> Organisation par spécialités (marketing, finance, etc.)</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Éléments clés à définir :</h4>
+                    <ul>
+                        <li>Description des postes et des responsabilités</li>
+                        <li>Relations de travail et canaux de communication</li>
+                        <li>Horaires de travail et disponibilités</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">⚙️ Planification Opérationnelle</h3>
+                <div class="card">
+                    <h4>Définition des processus :</h4>
+                    <p>Selon la norme ISO 9000, un processus est un système d'activités qui utilise des ressources pour transformer les éléments d'entrée en éléments de sortie.</p>
+                    
+                    <h4 style="margin-top:15px">Caractéristiques d'un processus :</h4>
+                    <ul>
+                        <li>Un nom et un pilote responsable</li>
+                        <li>Un début et une fin clairement définis</li>
+                        <li>Des données d'entrée et de sortie identifiables</li>
+                        <li>Des ressources utilisées identifiables</li>
+                        <li>Des indicateurs de mesure</li>
+                    </ul>
+                    
+                    <div class="card highlight" style="margin-top:15px">
+                        <h4>⚠️ Les Quatre Fonctions Incompatibles</h4>
+                        <p>Pour éviter les fraudes et les erreurs, il est essentiel de séparer les quatre fonctions suivantes :</p>
+                        <ol>
+                            <li><strong>L'autorisation :</strong> Qui décide et valide les opérations ?</li>
+                            <li><strong>La détention :</strong> Qui détient physiquement les biens ou les documents ?</li>
+                            <li><strong>L'enregistrement :</strong> Qui tient les comptes et les registres ?</li>
+                            <li><strong>Le contrôle/vérification :</strong> Qui vérifie les opérations ?</li>
+                        </ol>
+                        <p class="highlight">🚫 Ne jamais cumuler ces fonctions entre les mains d'une seule personne, même prises deux à deux.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header">🔍 Exemple de Processus d'Achat</div>
+                        <div class="accordion-content">
+                            <p><strong>Entrée :</strong> Demande d'achat validée</p>
+                            <p><strong>Processus :</strong></p>
+                            <ol>
+                                <li>Sélection des fournisseurs (service achats)</li>
+                                <li>Émission du bon de commande (service achats)</li>
+                                <li>Réception des marchandises (service logistique)</li>
+                                <li>Vérification de la conformité (service qualité)</li>
+                                <li>Validation de la facture (service comptabilité)</li>
+                                <li>Paiement (service financier)</li>
+                            </ol>
+                            <p><strong>Sortie :</strong> Marchandises reçues et facture payée</p>
+                            <p><strong>Indicateurs :</strong> Délai moyen de traitement, taux d'erreurs, satisfaction fournisseurs</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Module 4: Planification Technique -->
+            <section id="module4" class="content-section">
+                <h2 class="section-title">4. Planification Technique du Projet</h2>
+                
+                <div class="card">
+                    <h3>📋 Matrice de Planification</h3>
+                    <p>La matrice de planification structure les objectifs, indicateurs, sources de vérification et hypothèses du projet :</p>
+                    
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Objectifs</th>
+                                    <th>Indicateurs de réussite</th>
+                                    <th>Source de vérification</th>
+                                    <th>Hypothèses</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Objectif général</strong></td>
+                                    <td>Impact à long terme</td>
+                                    <td>Indicateurs globaux</td>
+                                    <td>Études, rapports externes</td>
+                                    <td>Contexte stable</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Objectifs spécifiques</strong></td>
+                                    <td>Effets directs attendus</td>
+                                    <td>Indicateurs intermédiaires</td>
+                                    <td>Rapports d'activités</td>
+                                    <td>Partenaires engagés</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Résultats</strong></td>
+                                    <td>Biens/services produits</td>
+                                    <td>Indicateurs de production</td>
+                                    <td>Rapports techniques</td>
+                                    <td>Ressources disponibles</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Activités</strong></td>
+                                    <td>Actions à réaliser</td>
+                                    <td>Indicateurs d'activité</td>
+                                    <td>Comptes-rendus</td>
+                                    <td>Absence d'imprévus majeurs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">📅 Programmation des Tâches</h3>
+                <div class="card">
+                    <h4>Méthodologie :</h4>
+                    <ul>
+                        <li>Lister toutes les activités à réaliser avec leurs dates prévues</li>
+                        <li>Identifier les dépendances entre les tâches (préalables, parallèles)</li>
+                        <li>Utiliser un diagramme de Gantt pour visualiser le planning global</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Exemple de Diagramme de Gantt :</h4>
+                    <div style="background:#f8f9fa;padding:15px;border-radius:8px;margin-top:10px;">
+                        <div style="display:flex;align-items:center;margin-bottom:8px;">
+                            <div style="width:120px;font-weight:bold;">Phase 1</div>
+                            <div style="flex:1;background:#3498db;height:20px;border-radius:10px;"></div>
+                        </div>
+                        <div style="display:flex;align-items:center;margin-bottom:8px;">
+                            <div style="width:120px;font-weight:bold;">Phase 2</div>
+                            <div style="flex:1;background:#27ae60;height:20px;border-radius:10px;margin-left:30%;"></div>
+                        </div>
+                        <div style="display:flex;align-items:center;margin-bottom:8px;">
+                            <div style="width:120px;font-weight:bold;">Phase 3</div>
+                            <div style="flex:1;background:#e74c3c;height:20px;border-radius:10px;margin-left:60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">👥 Programmation des Ressources</h3>
+                <div class="card">
+                    <h4>Ressources Humaines :</h4>
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rôle</th>
+                                    <th>Janvier</th>
+                                    <th>Février</th>
+                                    <th>Mars</th>
+                                    <th>Juillet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Coordinateur</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                </tr>
+                                <tr>
+                                    <td>DAF</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td></td>
+                                    <td>X</td>
+                                </tr>
+                                <tr>
+                                    <td>Autres personnel</td>
+                                    <td></td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                </tr>
+                                <tr style="font-weight:bold;background:#f8f9fa;">
+                                    <td>Total</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h4 style="margin-top:20px">Matériel et Technique :</h4>
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ressource</th>
+                                    <th>Janvier</th>
+                                    <th>Février</th>
+                                    <th>Mars</th>
+                                    <th>Juillet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Local</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                </tr>
+                                <tr>
+                                    <td>Véhicule</td>
+                                    <td></td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Autres matériels</td>
+                                    <td>X</td>
+                                    <td>X</td>
+                                    <td></td>
+                                    <td>X</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">💰 Budgétisation</h3>
+                <div class="card">
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Poste</th>
+                                    <th>Janvier</th>
+                                    <th>Février</th>
+                                    <th>Mars</th>
+                                    <th>Juillet</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Local</td>
+                                    <td>10 000</td>
+                                    <td>10 000</td>
+                                    <td>10 000</td>
+                                    <td>10 000</td>
+                                    <td>40 000</td>
+                                </tr>
+                                <tr>
+                                    <td>RH</td>
+                                    <td>20 000</td>
+                                    <td>20 000</td>
+                                    <td>20 000</td>
+                                    <td>20 000</td>
+                                    <td>80 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Matériel</td>
+                                    <td>40 000</td>
+                                    <td>10 000</td>
+                                    <td>5 000</td>
+                                    <td>5 000</td>
+                                    <td>60 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Fonctionnement</td>
+                                    <td>5 000</td>
+                                    <td>5 000</td>
+                                    <td>5 000</td>
+                                    <td>5 000</td>
+                                    <td>20 000</td>
+                                </tr>
+                                <tr style="font-weight:bold;background:#f8f9fa;">
+                                    <td>Total</td>
+                                    <td>75 000</td>
+                                    <td>45 000</td>
+                                    <td>40 000</td>
+                                    <td>40 000</td>
+                                    <td>200 000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">📑 Plan d'Affaires</h3>
+                <div class="card">
+                    <h4>Définition :</h4>
+                    <p>Le plan d'affaires est le document conceptuel du projet dans le cadre d'une entreprise à but lucratif.</p>
+                    
+                    <h4 style="margin-top:15px">Structure du plan d'affaires :</h4>
+                    <ol>
+                        <li><strong>Sous-dossier juridique :</strong> Statuts, autorisations, conformité légale</li>
+                        <li><strong>Sous-dossier étude de marché :</strong> Analyse concurrentielle, segmentation client, prévisions de ventes</li>
+                        <li><strong>Sous-dossier technique :</strong> Processus de production, équipements, technologies</li>
+                        <li><strong>Sous-dossier financier :</strong> Prévisions de trésorerie, compte de résultat prévisionnel, plan de financement</li>
+                        <li><strong>Sous-dossier économique et social :</strong> Impact sur l'emploi, responsabilité sociétale</li>
+                    </ol>
+                </div>
+                
+                <h3 class="section-subtitle">📄 Document du Projet / Formulation</h3>
+                <div class="card">
+                    <p>La formulation complète du projet comprend :</p>
+                    <ol>
+                        <li>Formulation du projet / Vision</li>
+                        <li>Objectif général</li>
+                        <li>Objectifs spécifiques</li>
+                        <li>Définition des axes</li>
+                        <li>Matrice des activités</li>
+                        <li>Évaluation des coûts</li>
+                        <li>Identification des risques et des hypothèses</li>
+                        <li>Plan de mise en œuvre du projet</li>
+                        <li>Cadre logique</li>
+                        <li>Dispositif de suivi évaluation</li>
+                        <li>Plan de communication</li>
+                        <li>Théorie du changement</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Module 5: Cadre Logique & Gestion des Risques (Example of detailed module) -->
+            <section id="module5" class="content-section">
+                <h2 class="section-title">5. Cadre Logique & Gestion des Risques</h2>
+                
+                <div class="card">
+                    <h3>📋 Définition et Objectifs du Cadre Logique</h3>
+                    <p>Une matrice de cadre logique est un document qui permet de présenter les objectifs d'un projet, ses sous-objectifs, les valeurs cibles, les indicateurs de mesure, les intervenants et les hypothèses.</p>
+                    <p>Le cadre logique permet :</p>
+                    <ul>
+                        <li>D'évaluer la cohérence et la structuration du projet</li>
+                        <li>De vérifier la pertinence des standards utilisés</li>
+                        <li>De servir d'outil de pilotage tout au long du projet</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">📊 Structure du Cadre Logique</h3>
+                <div class="responsive-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Logique d'intervention</th>
+                                <th>Indicateurs Objectivement Vérifiables (IOV)</th>
+                                <th>Moyens de Vérification</th>
+                                <th>Hypothèses</th>
+                                <th>Intervenants</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Objectif Global</strong><br>Améliorer les niveaux et conditions de vie des petits producteurs en milieu rural</td>
+                                <td>- Taux d'accroissement annuel des revenus des ménages<br>- Revenu disponible brut par ménage<br>- Taux de ménages ayant accès au point d'eau</td>
+                                <td>- Enquête socio-économique ROR<br>- Rapport d'évaluation interne</td>
+                                <td>Évolution du contexte socio-politique</td>
+                                <td>UPSE</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Objectif Spécifique 1</strong><br>Renforcement des capacités organisationnelles et de gestion des associations paysannes</td>
+                                <td>- % d'associations capables de tenir des réunions de bilan<br>- % d'associations ayant des projets mis en œuvre</td>
+                                <td>- Enquête AGR<br>- PV de réunions des associations</td>
+                                <td>Évolution du processus de décentralisation</td>
+                                <td>AGR</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Résultats</strong><br>Opérationnalité des associations et groupements des producteurs</td>
+                                <td>- Nombre AUE/AIA opérationnelles<br>- Taux de réalisation des travaux d'entretien</td>
+                                <td>Rapport d'activités</td>
+                                <td>Disparité des besoins en liquidités</td>
+                                <td>AGR, MEVA</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Activités</strong><br>Réaliser les diagnostics participatifs des périmètres</td>
+                                <td>Nombre de diagnostics réalisés</td>
+                                <td>Rapports d'activités</td>
+                                <td>-</td>
+                                <td>AGR, MEVA, AHA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card success">
+                    <h3>🔑 À Retenir</h3>
+                    <p>Le cadre logique structure la pensée du porteur de projet en 4 niveaux :</p>
+                    <ol>
+                        <li><strong>Objectif Global :</strong> Impact à long terme sur le développement</li>
+                        <li><strong>Objectifs Spécifiques :</strong> Effets directs attendus du projet</li>
+                        <li><strong>Résultats :</strong> Biens, services ou changements produits par le projet</li>
+                        <li><strong>Activités :</strong> Actions à mener pour obtenir les résultats</li>
+                    </ol>
+                    <p>Chaque niveau est validé par des indicateurs objectivement vérifiables, des sources de vérification, des hypothèses et des intervenants clés.</p>
+                </div>
+                
+                <h3 class="section-subtitle">⚠️ Identification et Évaluation des Risques</h3>
+                <div class="card">
+                    <h4>Faisabilité Technique</h4>
+                    <ul>
+                        <li>Performances particulières à obtenir ou imprécisions dans la définition du besoin ?</li>
+                        <li>Utilisation de techniques nouvelles ?</li>
+                        <li>Où se trouve la compétence susceptible de traiter ces points ?</li>
+                        <li>Réduction de certaines exigences du client ?</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 15px">Faisabilité Calendaire</h4>
+                    <ul>
+                        <li>Évaluer des durées réalistes</li>
+                        <li>S'appuyer sur des expériences et des méthodologies de métrique</li>
+                        <li>Procéder par analogie</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 15px">Faisabilité Financière</h4>
+                    <ul>
+                        <li>Disponibilité des budgets au bon moment</li>
+                        <li>Origine et accessibilité des fonds</li>
+                        <li>Qui finance quoi et quand dans le projet ?</li>
+                        <li>L'ensemble des dépenses du projet est-il entièrement couvert ?</li>
+                        <li>Les risques financiers sont-ils provisionnés ?</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">🎯 Matrice des Risques</h3>
+                <div style="position: relative; max-width: 600px; margin: 0 auto 30px;">
+                    <div class="risk-matrix">
+                        <div class="matrix-cell matrix-header">4</div>
+                        <div class="matrix-cell risk-critical">Critique</div>
+                        <div class="matrix-cell risk-critical">Critique</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        
+                        <div class="matrix-cell matrix-header">3</div>
+                        <div class="matrix-cell risk-critical">Critique</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-medium">Moyen</div>
+                        
+                        <div class="matrix-cell matrix-header">2</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-medium">Moyen</div>
+                        <div class="matrix-cell risk-medium">Moyen</div>
+                        
+                        <div class="matrix-cell matrix-header">1</div>
+                        <div class="matrix-cell risk-high">Élevé</div>
+                        <div class="matrix-cell risk-medium">Moyen</div>
+                        <div class="matrix-cell risk-medium">Moyen</div>
+                        <div class="matrix-cell risk-low">Faible</div>
+                        
+                        <div class="matrix-cell matrix-header">0</div>
+                        <div class="matrix-cell matrix-header">1</div>
+                        <div class="matrix-cell matrix-header">2</div>
+                        <div class="matrix-cell matrix-header">3</div>
+                        <div class="matrix-cell matrix-header">4</div>
+                    </div>
+                    <div class="matrix-label matrix-x">Gravité de l'impact</div>
+                    <div class="matrix-label matrix-y">Probabilité d'occurrence</div>
+                </div>
+                
+                <div class="card highlight">
+                    <h3>💡 Méthode d'Évaluation : La Criticité</h3>
+                    <p><strong>Criticité = Gravité × Fréquence</strong></p>
+                    <p>Pour prioriser les risques, utilisez la matrice ci-dessus :</p>
+                    <ul>
+                        <li><span class="risk-critical" style="padding:2px 8px;border-radius:4px;color:white">Risques critiques</span> : À traiter en priorité absolue (haut à droite)</li>
+                        <li><span class="risk-high" style="padding:2px 8px;border-radius:4px;color:white">Risques élevés</span> : À traiter rapidement</li>
+                        <li><span class="risk-medium" style="padding:2px 8px;border-radius:4px;color:white">Risques moyens</span> : À surveiller</li>
+                        <li><span class="risk-low" style="padding:2px 8px;border-radius:4px;color:white">Risques faibles</span> : Acceptables</li>
+                    </ul>
+                    <p class="highlight" style="margin-top:10px">Astuce : Appliquez la <span class="tooltip">Loi de Pareto<span class="tooltip-text">20% des causes sont responsables de 80% des conséquences</span></span> - concentrez-vous sur les 20% de risques qui génèrent 80% des problèmes potentiels.</p>
+                </div>
+                
+                <h3 class="section-subtitle">🛡️ Plan de Mitigation des Risques</h3>
+                <div class="card">
+                    <p>Pour chaque risque identifié et priorisé, établissez un plan d'action avec :</p>
+                    <ul>
+                        <li><strong>Mesures de prévention :</strong> Réduire la fréquence d'occurrence (formation, procédures, contrôles)</li>
+                        <li><strong>Mesures de protection :</strong> Réduire la gravité de l'impact (assurances, plans de secours, redondances)</li>
+                        <li><strong>Responsable :</strong> Personne en charge du suivi du risque</li>
+                        <li><strong>Échéance :</strong> Date limite de mise en œuvre des actions</li>
+                        <li><strong>Coût :</strong> Budget alloué à la mitigation</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Exemple de Plan de Mitigation</h4>
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Risque</th>
+                                    <th>Criticité</th>
+                                    <th>Mesures de Prévention</th>
+                                    <th>Mesures de Protection</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Retard dans les livraisons des fournisseurs</td>
+                                    <td class="risk-high">Élevé</td>
+                                    <td>- Sélection rigoureuse des fournisseurs<br>- Contrats avec pénalités de retard</td>
+                                    <td>- Stock de sécurité<br>- Fournisseurs alternatifs identifiés</td>
+                                    <td>Achats</td>
+                                </tr>
+                                <tr>
+                                    <td>Départ clé d'un membre de l'équipe</td>
+                                    <td class="risk-medium">Moyen</td>
+                                    <td>- Plan de motivation<br>- Entretiens réguliers</td>
+                                    <td>- Documentation complète<br>- Formation croisée</td>
+                                    <td>DRH</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Evaluation Section with 50 questions -->
+            <section id="evaluation" class="content-section">
+                <h2 class="section-title">🎯 Évaluation Interactive (50 questions)</h2>
+                
+                <div class="score-display" id="quizScore">Score: 0/50</div>
+                
+                <div id="quizContainer">
+                    <!-- Quiz pages will be dynamically generated here -->
+                </div>
+                
+                <div class="quiz-pagination" id="quizPagination">
+                    <!-- Pagination buttons will be generated here -->
+                </div>
+                
+                <div class="quiz-controls">
+                    <button class="btn" id="prevPageBtn">◀ Page Précédente</button>
+                    <button class="btn btn-primary" id="submitQuiz">Vérifier mes réponses</button>
+                    <button class="btn" id="nextPageBtn">Page Suivante ▶</button>
+                </div>
+                
+                <div class="card" style="margin-top:30px">
+                    <h3>📝 Étude de Cas : Production de Vaccins en Afrique</h3>
+                    <p><strong>Contexte :</strong> Face à la crise sanitaire, les autorités de l'Union Africaine souhaitent doter l'Afrique de trois unités de production de vaccins contre le Covid-19 et autres maladies.</p>
+                    <p><strong>Votre mission :</strong> En tant que membre du comité du projet, proposez une analyse complète du projet.</p>
+                    <div style="background:#f8f9fa;padding:15px;border-radius:8px;margin:15px 0;">
+                        <p><strong>Questions à traiter :</strong></p>
+                        <ol>
+                            <li>Analysez le projet sous les aspects faisabilité, risques, délais de réalisation, financement.</li>
+                            <li>Établissez le cadre logique sommaire du projet.</li>
+                            <li>Proposez un plan de mitigation des risques identifiés.</li>
+                            <li>Le projet est-il viable ? Justifiez votre réponse.</li>
+                        </ol>
+                    </div>
+                    <p class="highlight">💡 Conseil : Utilisez les connaissances acquises dans les modules précédents, notamment le cadre logique (Module 5) et la gestion des risques (Module 5).</p>
+                </div>
+            </section>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h2 class="section-title">📊 Tableau de Bord Personnel</h2>
+                
+                <div class="dashboard-grid">
+                    <div class="stat-card progress">
+                        <div class="stat-number" id="progressStat">35%</div>
+                        <div class="stat-label">Progression Globale</div>
+                        <div style="background:#e0e0e0;border-radius:10px;height:8px;margin-top:10px;overflow:hidden;">
+                            <div style="background:#27ae60;height:100%;width:35%;border-radius:10px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number">4/8</div>
+                        <div class="stat-label">Modules Complétés</div>
+                        <div style="display:flex;gap:5px;margin-top:10px;">
+                            <div style="width:20px;height:20px;background:#27ae60;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#27ae60;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#27ae60;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#27ae60;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#e0e0e0;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#e0e0e0;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#e0e0e0;border-radius:50%;"></div>
+                            <div style="width:20px;height:20px;background:#e0e0e0;border-radius:50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card risks">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Risques Maîtrisés</div>
+                        <p style="font-size:0.9rem;margin-top:5px;">+3 cette semaine</p>
+                    </div>
+                    
+                    <div class="stat-card next">
+                        <div class="stat-number">Module 6</div>
+                        <div class="stat-label">Prochain Module</div>
+                        <p style="font-size:0.9rem;margin-top:5px;">Suivi et Évaluation</p>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle" style="margin-top:30px">🎯 Recommandations Personnalisées</h3>
+                <div class="card">
+                    <h4>Basé sur votre progression et vos résultats :</h4>
+                    <ul>
+                        <li>✅ <strong>Points forts :</strong> Bonne compréhension du cycle de vie des projets et des outils de planification</li>
+                        <li>⚠️ <strong>À renforcer :</strong> Approfondir la gestion des risques (matrice de criticité, plan de mitigation)</li>
+                        <li>💡 <strong>Conseil :</strong> Revoir le Module 5 avec les flashcards interactives</li>
+                        <li>🚀 <strong>Prochaine étape :</strong> Passer le quiz du Module 5 avant d'aborder le Module 6</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle" style="margin-top:30px">📈 Historique des Performances</h3>
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+                        <span><strong>Quiz Module 1 :</strong> 85%</span>
+                        <span class="badge earned">Validé</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+                        <span><strong>Quiz Module 2 :</strong> 90%</span>
+                        <span class="badge earned">Validé</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+                        <span><strong>Quiz Module 3 :</strong> 75%</span>
+                        <span class="badge">À améliorer</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+                        <span><strong>Quiz Module 4 :</strong> 80%</span>
+                        <span class="badge earned">Validé</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                        <span><strong>Quiz Module 5 :</strong> Non commencé</span>
+                        <button class="btn" style="padding:5px 10px;font-size:0.9rem;">Démarrer</button>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle" style="margin-top:30px">📝 Mes Notes Personnelles</h3>
+                <div class="card">
+                    <textarea id="personalNotes" style="width:100%;height:150px;padding:15px;border:1px solid #ddd;border-radius:8px;background:var(--card-bg);color:var(--text);" placeholder="Prenez vos notes ici... Elles seront sauvegardées automatiquement."></textarea>
+                    <p style="margin-top:10px;font-size:0.9rem;color:var(--gray);">Vos notes sont sauvegardées localement dans votre navigateur. Elles ne seront pas perdues si vous fermez la page.</p>
+                </div>
+            </section>
+
+            <!-- Other modules -->
+            <section id="module6" class="content-section">
+                <h2 class="section-title">6. Suivi et Évaluation</h2>
+                <div class="card">
+                    <h3>📊 Outils de Suivi et d'Évaluation</h3>
+                    <ul>
+                        <li><strong>Indicateurs de mesure des performances :</strong> KPI définis dans le cadre logique</li>
+                        <li><strong>Reporting journaliers :</strong> Suivi quotidien des activités critiques</li>
+                        <li><strong>Reporting hebdomadaires :</strong> Réunions de comité de pilotage (CODIR)</li>
+                        <li><strong>Reporting mensuels/trimestriels :</strong> Analyse des écarts et ajustements</li>
+                        <li><strong>Reporting annuels :</strong> Bilan complet et planification de l'année suivante</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">🔄 Ajustement des Indicateurs et de la Trajectoire</h3>
+                <div class="card">
+                    <h4>Processus d'ajustement :</h4>
+                    <ul>
+                        <li>Révision régulière des indicateurs de performance</li>
+                        <li>Reformulation des hypothèses si nécessaire</li>
+                        <li>Ajustement de la trajectoire du projet</li>
+                        <li>Communication des changements aux parties prenantes</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Exemple : Gestion Axée sur les Résultats (GAR)</h4>
+                    <p>La GAR est une approche qui met l'accent sur les résultats concrets plutôt que sur les activités. Elle implique :</p>
+                    <ul>
+                        <li>Définition claire des résultats attendus</li>
+                        <li>Mesure régulière des progrès vers ces résultats</li>
+                        <li>Utilisation des données pour prendre des décisions</li>
+                        <li>Responsabilisation des équipes sur les résultats</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="module7" class="content-section">
+                <h2 class="section-title">7. Clôture de Projet</h2>
+                <div class="card">
+                    <h3>CloseOperation Processus de Clôture</h3>
+                    <ul>
+                        <li>Information aux partenaires et aux autorités</li>
+                        <li>Liquidation des droits du personnel</li>
+                        <li>Apurement des dettes</li>
+                        <li>Arrêt des comptes</li>
+                        <li>Audit des comptes du projet</li>
+                        <li>Rapport au bailleur</li>
+                    </ul>
+                </div>
+                
+                <h3 class="section-subtitle">📈 Évaluation Finale de l'Impact</h3>
+                <div class="card">
+                    <h4>Étapes de l'évaluation finale :</h4>
+                    <ol>
+                        <li>Élaboration des Termes de Référence (TDR) de la mission d'évaluation</li>
+                        <li>Sélection d'un bureau/consultant indépendant pour l'évaluation</li>
+                        <li>Réalisation de l'évaluation (analyse des résultats, entretiens, enquêtes)</li>
+                        <li>Rédaction du rapport d'évaluation avec recommandations</li>
+                        <li>Règlement des désaccords éventuels avec les parties prenantes</li>
+                    </ol>
+                    
+                    <h4 style="margin-top:15px">Objectifs de l'évaluation finale :</h4>
+                    <ul>
+                        <li>Mesurer l'atteinte des objectifs initiaux</li>
+                        <li>Identifier les succès et les échecs</li>
+                        <li>Tirer des enseignements pour les futurs projets</li>
+                        <li>Capitaliser les bonnes pratiques</li>
+                        <li>Assurer la transparence et la redevabilité</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="module8" class="content-section">
+                <h2 class="section-title">8. Étude de Cas Pratique</h2>
+                <div class="card">
+                    <h3>étude de Cas : Projet de Production de Vaccins en Afrique</h3>
+                    <p><strong>Contexte :</strong> Face à la crise sanitaire, l'Union Africaine souhaite doter le continent de trois unités de production de vaccins contre le Covid-19 et autres maladies.</p>
+                    
+                    <h4 style="margin-top:15px">Analyse du Projet :</h4>
+                    <ul>
+                        <li><strong>Faisabilité technique :</strong> Disponibilité des technologies, compétences locales, infrastructures nécessaires</li>
+                        <li><strong>Faisabilité financière :</strong> Coûts d'investissement, sources de financement, modèle économique durable</li>
+                        <li><strong>Faisabilité calendaire :</strong> Délais de construction, mise en service, production à pleine capacité</li>
+                        <li><strong>Risques identifiés :</strong> Réglementaires, technologiques, financiers, politiques, sanitaires</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px">Cadre Logique Sommaire :</h4>
+                    <div class="responsive-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Niveau</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Objectif Global</strong></td>
+                                    <td>Améliorer la sécurité sanitaire en Afrique par une production locale de vaccins</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Objectif Spécifique</strong></td>
+                                    <td>Créer trois unités de production de vaccins opérationnelles d'ici 3 ans</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Résultats</strong></td>
+                                    <td>- Sites construits et équipés<br>- Personnel formé<br>- Certifications obtenues<br>- Production démarrée</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Activités</strong></td>
+                                    <td>- Études de faisabilité<br>- Construction des sites<br>- Achat des équipements<br>- Recrutement et formation<br>- Tests et certifications</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h4 style="margin-top:15px">Plan de Mitigation des Risques :</h4>
+                    <ul>
+                        <li><strong>Risque réglementaire :</strong> Travailler en étroite collaboration avec les autorités sanitaires dès la phase de conception</li>
+                        <li><strong>Risque technologique :</strong> Partenariats avec des laboratoires internationaux expérimentés</li>
+                        <li><strong>Risque financier :</strong> Diversification des sources de financement (bailleurs, secteur privé, gouvernements)</li>
+                        <li><strong>Risque politique :</strong> Engagement des gouvernements locaux et régionaux dès le départ</li>
+                    </ul>
+                    
+                    <p class="highlight" style="margin-top:15px"><strong>Conclusion sur la viabilité :</strong> Le projet est viable à condition de sécuriser le financement, de s'appuyer sur des partenariats techniques solides et de maintenir un engagement politique fort à tous les niveaux.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements with safety checks
+            const moduleList = document.getElementById('moduleList');
+            const moduleItems = moduleList ? moduleList.querySelectorAll('.module-item') : [];
+            const contentSections = document.querySelectorAll('.content-section');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const mindmapNodes = document.querySelectorAll('.mindmap-node');
+            const mindmapCenter = document.getElementById('mindmapCenter');
+            const flashcard = document.getElementById('flashcard1');
+            const quizScoreDisplay = document.getElementById('quizScore');
+            const personalNotes = document.getElementById('personalNotes');
+            const globalProgress = document.getElementById('globalProgress');
+            const progressStat = document.getElementById('progressStat');
+            const notesBtn = document.getElementById('notesBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const courseSearch = document.getElementById('courseSearch');
+            const quizContainer = document.getElementById('quizContainer');
+            const quizPagination = document.getElementById('quizPagination');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const submitQuizBtn = document.getElementById('submitQuiz');
+            
+            // Initialize state
+            let score = 0;
+            let answeredQuestions = 0;
+            let darkMode = localStorage.getItem('darkMode') === 'true';
+            let savedNotes = localStorage.getItem('courseNotes') || '';
+            let currentPage = 1;
+            const questionsPerPage = 5;
+            const totalQuestions = 50;
+            const totalPages = Math.ceil(totalQuestions / questionsPerPage);
+            
+            // Quiz data - 50 questions based on course content
+            const quizData = [
+                {
+                    question: "1. Selon le PMI, qu'est-ce qu'un projet ?",
+                    options: [
+                        "Une opération répétitive visant à maintenir la production",
+                        "Une entreprise temporaire visant à créer un produit et/ou un service unique",
+                        "Un processus continu d'amélioration des services",
+                        "Une structure permanente de l'organisation"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Revoir le Module 1 sur les définitions fondamentales de la gestion de projet."
+                },
+                {
+                    question: "2. Quelle est la formule de la criticité d'un risque ?",
+                    options: [
+                        "Gravité + Fréquence",
+                        "Gravité / Fréquence",
+                        "Gravité × Fréquence",
+                        "Fréquence - Gravité"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : La criticité combine deux dimensions du risque."
+                },
+                {
+                    question: "3. Quel outil permet de visualiser l'enchaînement des tâches et le chemin critique ?",
+                    options: [
+                        "Le diagramme de Gantt",
+                        "La méthode PERT",
+                        "La matrice SWOT",
+                        "Le cadre logique"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cet outil utilise un réseau de tâches avec des durées optimistes, pessimistes et probables."
+                },
+                {
+                    question: "4. Dans le cadre logique, quel niveau correspond aux 'biens, services ou changements produits par le projet' ?",
+                    options: [
+                        "Objectif Global",
+                        "Objectifs Spécifiques",
+                        "Résultats",
+                        "Activités"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Ce niveau est situé entre les objectifs spécifiques et les activités."
+                },
+                {
+                    question: "5. Quelle est la première étape de la gestion des risques ?",
+                    options: [
+                        "Identifier les risques",
+                        "Évaluer les risques",
+                        "Prévenir les risques",
+                        "Suivre les risques"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Avant de pouvoir évaluer ou traiter les risques, il faut d'abord les connaître."
+                },
+                {
+                    question: "6. Quelle phase du cycle de vie d'un projet inclut la définition des objectifs et l'étude de faisabilité ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : C'est la phase initiale qui détermine si le projet est viable."
+                },
+                {
+                    question: "7. Quel document présente les objectifs d'un projet, ses indicateurs, ses hypothèses et ses intervenants ?",
+                    options: [
+                        "Le plan de communication",
+                        "Le cadre logique",
+                        "Le diagramme de Gantt",
+                        "Le plan de mitigation"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : C'est un outil de structuration et de pilotage du projet."
+                },
+                {
+                    question: "8. Quelle méthode de planification utilise des barres horizontales pour représenter les tâches dans le temps ?",
+                    options: [
+                        "La méthode PERT",
+                        "Le diagramme de Gantt",
+                        "La méthode des potentiels",
+                        "La WBS"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : C'est un outil visuel très populaire pour la planification de projet."
+                },
+                {
+                    question: "9. Quel type d'organisation implique un double reporting (fonctionnel et projet) ?",
+                    options: [
+                        "Hiérarchique",
+                        "Divisionnaire",
+                        "Matricielle",
+                        "Fonctionnelle"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Cette structure combine les avantages de l'organisation fonctionnelle et par projet."
+                },
+                {
+                    question: "10. Quelle est la dernière phase du cycle de vie d'un projet ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette phase inclut l'évaluation finale et la capitalisation des connaissances."
+                },
+                {
+                    question: "11. Quel document conceptuel est utilisé pour les projets à but lucratif ?",
+                    options: [
+                        "Le cadre logique",
+                        "Le plan d'affaires",
+                        "Le document de projet",
+                        "Le plan de communication"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Ce document inclut des sous-dossiers juridique, étude de marché, technique et financier."
+                },
+                {
+                    question: "12. Quelle fonction ne doit jamais être cumulée avec l'enregistrement dans un processus ?",
+                    options: [
+                        "L'autorisation",
+                        "La détention",
+                        "Le contrôle",
+                        "Toutes les réponses ci-dessus"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Selon le principe des quatre fonctions incompatibles, aucune de ces fonctions ne doit être cumulée."
+                },
+                {
+                    question: "13. Quel outil permet d'identifier le chemin critique d'un projet ?",
+                    options: [
+                        "Le diagramme de Gantt",
+                        "La méthode PERT",
+                        "La matrice des risques",
+                        "Le cadre logique"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cet outil utilise un réseau de tâches avec des durées optimistes, pessimistes et probables."
+                },
+                {
+                    question: "14. Quelle phase du cycle de vie inclut l'exécution des tâches et la gestion des imprévus ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : C'est la phase où le travail concret est réalisé."
+                },
+                {
+                    question: "15. Quel niveau du cadre logique correspond à l'impact à long terme sur le développement ?",
+                    options: [
+                        "Objectif Global",
+                        "Objectifs Spécifiques",
+                        "Résultats",
+                        "Activités"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : C'est le niveau le plus élevé du cadre logique."
+                },
+                {
+                    question: "16. Quelle est la première étape de la planification stratégique d'un projet ?",
+                    options: [
+                        "Sélection des axes réalistes",
+                        "Brainstorming des axes stratégiques",
+                        "Planification des axes stratégiques",
+                        "Définition du type d'organisation"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette étape implique de générer des idées en équipe."
+                },
+                {
+                    question: "17. Quel type de risque concerne la disponibilité des budgets au bon moment ?",
+                    options: [
+                        "Faisabilité technique",
+                        "Faisabilité calendaire",
+                        "Faisabilité financière",
+                        "Risque opérationnel"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Ce risque est lié à la gestion de l'argent du projet."
+                },
+                {
+                    question: "18. Quelle matrice permet de prioriser les risques en fonction de leur gravité et de leur fréquence ?",
+                    options: [
+                        "Matrice SWOT",
+                        "Matrice de planification",
+                        "Matrice des risques",
+                        "Matrice RACI"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Cette matrice utilise une échelle de 1 à 4 pour évaluer les risques."
+                },
+                {
+                    question: "19. Quel document inclut la formulation du projet, les objectifs, les activités et le cadre logique ?",
+                    options: [
+                        "Le plan d'affaires",
+                        "Le document du projet",
+                        "Le rapport d'évaluation",
+                        "Le plan de communication"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : C'est le document complet qui décrit tous les aspects du projet."
+                },
+                {
+                    question: "20. Quelle phase du cycle de vie inclut l'analyse des écarts entre planifié et réalisé ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette phase permet de tirer des enseignements pour les futurs projets."
+                },
+                {
+                    question: "21. Quelle organisation est caractérisée par des lignes de commandement claires ?",
+                    options: [
+                        "Hiérarchique",
+                        "Divisionnaire",
+                        "Matricielle",
+                        "Fonctionnelle"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : C'est la structure organisationnelle la plus classique."
+                },
+                {
+                    question: "22. Quel outil de suivi permet de mesurer les performances du projet ?",
+                    options: [
+                        "Les indicateurs KPI",
+                        "Le diagramme de Gantt",
+                        "La méthode PERT",
+                        "Le cadre logique"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Ces outils sont définis dans le cadre logique du projet."
+                },
+                {
+                    question: "23. Quelle approche met l'accent sur les résultats concrets plutôt que sur les activités ?",
+                    options: [
+                        "Gestion de projet traditionnelle",
+                        "Gestion axée sur les résultats (GAR)",
+                        "Gestion agile",
+                        "Ingénierie concourante"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette approche implique de définir clairement les résultats attendus."
+                },
+                {
+                    question: "24. Quelle étape de l'évaluation finale implique la sélection d'un consultant indépendant ?",
+                    options: [
+                        "Élaboration des TDR",
+                        "Sélection du consultant",
+                        "Réalisation de l'évaluation",
+                        "Rédaction du rapport"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette étape garantit l'objectivité de l'évaluation."
+                },
+                {
+                    question: "25. Quel document inclut les prévisions de trésorerie et le compte de résultat prévisionnel ?",
+                    options: [
+                        "Sous-dossier juridique",
+                        "Sous-dossier étude de marché",
+                        "Sous-dossier technique",
+                        "Sous-dossier financier"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Ce document est essentiel pour évaluer la viabilité économique du projet."
+                },
+                {
+                    question: "26. Quelle phase du cycle de vie inclut la définition détaillée des tâches, des ressources et des délais ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette phase suit la conception et précède la réalisation."
+                },
+                {
+                    question: "27. Quel niveau du cadre logique correspond aux actions à mener pour obtenir les résultats ?",
+                    options: [
+                        "Objectif Global",
+                        "Objectifs Spécifiques",
+                        "Résultats",
+                        "Activités"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : C'est le niveau le plus opérationnel du cadre logique."
+                },
+                {
+                    question: "28. Quelle méthode de gestion de projet utilise des cycles courts et une collaboration renforcée ?",
+                    options: [
+                        "Méthode traditionnelle",
+                        "Méthode agile",
+                        "Ingénierie concourante",
+                        "Méthode PERT"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette méthode est particulièrement adaptée aux projets complexes et incertains."
+                },
+                {
+                    question: "29. Quel type de risque concerne l'utilisation de techniques nouvelles ?",
+                    options: [
+                        "Faisabilité technique",
+                        "Faisabilité calendaire",
+                        "Faisabilité financière",
+                        "Risque politique"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Ce risque est lié aux aspects techniques du projet."
+                },
+                {
+                    question: "30. Quelle fonction dans un processus consiste à valider les opérations ?",
+                    options: [
+                        "L'autorisation",
+                        "La détention",
+                        "L'enregistrement",
+                        "Le contrôle"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Cette fonction détermine qui a le pouvoir de décider."
+                },
+                {
+                    question: "31. Quel outil permet de visualiser les dépendances entre les tâches ?",
+                    options: [
+                        "Le diagramme de Gantt",
+                        "La méthode PERT",
+                        "La matrice RACI",
+                        "Le cadre logique"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Cet outil montre les tâches sous forme de barres horizontales."
+                },
+                {
+                    question: "32. Quelle phase du cycle de vie inclut le choix du chef de projet ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 0,
+                    hint: "Indice : Le chef de projet est désigné dès le début du projet."
+                },
+                {
+                    question: "33. Quel document inclut l'analyse concurrentielle et la segmentation client ?",
+                    options: [
+                        "Sous-dossier juridique",
+                        "Sous-dossier étude de marché",
+                        "Sous-dossier technique",
+                        "Sous-dossier financier"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Ce document permet d'évaluer la viabilité commerciale du projet."
+                },
+                {
+                    question: "34. Quelle étape de la clôture de projet implique l'audit des comptes ?",
+                    options: [
+                        "Information aux partenaires",
+                        "Liquidation des droits du personnel",
+                        "Apurement des dettes",
+                        "Audit des comptes"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette étape garantit la transparence financière du projet."
+                },
+                {
+                    question: "35. Quel type d'organisation est basé sur des divisions ou filiales autonomes ?",
+                    options: [
+                        "Hiérarchique",
+                        "Divisionnaire",
+                        "Matricielle",
+                        "Fonctionnelle"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette structure est courante dans les grandes entreprises."
+                },
+                {
+                    question: "36. Quelle matrice utilise une échelle de couleur pour représenter les niveaux de risque ?",
+                    options: [
+                        "Matrice SWOT",
+                        "Matrice de planification",
+                        "Matrice des risques",
+                        "Matrice RACI"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Cette matrice permet de visualiser rapidement les risques critiques."
+                },
+                {
+                    question: "37. Quel niveau du cadre logique correspond aux effets directs attendus du projet ?",
+                    options: [
+                        "Objectif Global",
+                        "Objectifs Spécifiques",
+                        "Résultats",
+                        "Activités"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Ce niveau est situé entre l'objectif global et les résultats."
+                },
+                {
+                    question: "38. Quelle méthode de planification utilise un réseau de tâches avec des durées optimistes, pessimistes et probables ?",
+                    options: [
+                        "Diagramme de Gantt",
+                        "Méthode PERT",
+                        "Méthode des potentiels",
+                        "WBS"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette méthode permet de gérer les incertitudes sur les durées."
+                },
+                {
+                    question: "39. Quelle phase du cycle de vie inclut la coordination de l'équipe projet ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Le chef de projet coordonne l'équipe pendant cette phase."
+                },
+                {
+                    question: "40. Quel document inclut les processus de production et les équipements ?",
+                    options: [
+                        "Sous-dossier juridique",
+                        "Sous-dossier étude de marché",
+                        "Sous-dossier technique",
+                        "Sous-dossier financier"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Ce document décrit comment le produit ou service sera réalisé."
+                },
+                {
+                    question: "41. Quelle fonction dans un processus consiste à tenir les comptes et les registres ?",
+                    options: [
+                        "L'autorisation",
+                        "La détention",
+                        "L'enregistrement",
+                        "Le contrôle"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Cette fonction est essentielle pour la traçabilité des opérations."
+                },
+                {
+                    question: "42. Quel outil permet de définir les responsabilités dans un projet ?",
+                    options: [
+                        "Diagramme de Gantt",
+                        "Matrice RACI",
+                        "Méthode PERT",
+                        "Cadre logique"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette matrice définit qui est Responsable, Accountable, Consulté et Informé."
+                },
+                {
+                    question: "43. Quelle étape de la gestion des risques implique de réduire la fréquence d'occurrence ?",
+                    options: [
+                        "Identification",
+                        "Évaluation",
+                        "Prévention",
+                        "Protection"
+                    ],
+                    correctIndex: 2,
+                    hint: "Indice : Cette étape vise à éviter que le risque ne se produise."
+                },
+                {
+                    question: "44. Quel type de risque concerne l'évaluation des durées réalistes ?",
+                    options: [
+                        "Faisabilité technique",
+                        "Faisabilité calendaire",
+                        "Faisabilité financière",
+                        "Risque politique"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Ce risque est lié au respect des délais du projet."
+                },
+                {
+                    question: "45. Quelle phase du cycle de vie inclut la capitalisation des connaissances ?",
+                    options: [
+                        "Conception",
+                        "Planification",
+                        "Réalisation",
+                        "Clôture"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette phase permet de tirer des enseignements pour les futurs projets."
+                },
+                {
+                    question: "46. Quel document inclut l'impact sur l'emploi et la responsabilité sociétale ?",
+                    options: [
+                        "Sous-dossier juridique",
+                        "Sous-dossier étude de marché",
+                        "Sous-dossier technique",
+                        "Sous-dossier économique et social"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Ce document évalue l'impact social du projet."
+                },
+                {
+                    question: "47. Quelle méthode de gestion de projet utilise la métaphore du 'rugby' ?",
+                    options: [
+                        "Méthode traditionnelle",
+                        "Ingénierie concourante",
+                        "Méthode agile",
+                        "Méthode PERT"
+                    ],
+                    correctIndex: 1,
+                    hint: "Indice : Cette méthode oppose la 'course de relais' du modèle séquentiel."
+                },
+                {
+                    question: "48. Quel niveau du cadre logique est validé par des indicateurs objectivement vérifiables ?",
+                    options: [
+                        "Objectif Global",
+                        "Objectifs Spécifiques",
+                        "Résultats",
+                        "Tous les niveaux"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Chaque niveau du cadre logique a ses propres indicateurs."
+                },
+                {
+                    question: "49. Quelle étape de la clôture de projet implique le règlement des désaccords avec les parties prenantes ?",
+                    options: [
+                        "Information aux partenaires",
+                        "Liquidation des droits du personnel",
+                        "Rédaction du rapport d'évaluation",
+                        "Règlement des désaccords"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette étape garantit l'acceptation des conclusions de l'évaluation."
+                },
+                {
+                    question: "50. Quelle fonction dans un processus consiste à vérifier les opérations ?",
+                    options: [
+                        "L'autorisation",
+                        "La détention",
+                        "L'enregistrement",
+                        "Le contrôle"
+                    ],
+                    correctIndex: 3,
+                    hint: "Indice : Cette fonction garantit la qualité et la conformité des opérations."
+                }
+            ];
+            
+            // Generate quiz pages
+            function generateQuiz() {
+                quizContainer.innerHTML = '';
+                quizPagination.innerHTML = '';
+                
+                // Create pages
+                for (let page = 1; page <= totalPages; page++) {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = `quiz-page ${page === currentPage ? 'active' : ''}`;
+                    pageDiv.id = `page${page}`;
+                    
+                    // Add questions for this page
+                    const startIndex = (page - 1) * questionsPerPage;
+                    const endIndex = Math.min(startIndex + questionsPerPage, totalQuestions);
+                    
+                    for (let i = startIndex; i < endIndex; i++) {
+                        const question = quizData[i];
+                        const questionIndex = i + 1;
+                        
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = 'quiz-container';
+                        questionDiv.innerHTML = `
+                            <div class="quiz-question">${question.question}</div>
+                            <div class="quiz-options">
+                                ${question.options.map((option, idx) => `
+                                    <div class="quiz-option" data-index="${idx}" data-correct="${idx === question.correctIndex}">
+                                        ${option}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="quiz-feedback"></div>
+                            <button class="hint-btn">💡 Indice</button>
+                        `;
+                        pageDiv.appendChild(questionDiv);
+                    }
+                    
+                    quizContainer.appendChild(pageDiv);
+                }
+                
+                // Generate pagination buttons
+                for (let page = 1; page <= totalPages; page++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `page-btn ${page === currentPage ? 'active' : ''}`;
+                    pageBtn.textContent = page;
+                    pageBtn.dataset.page = page;
+                    quizPagination.appendChild(pageBtn);
+                }
+                
+                // Add event listeners for pagination buttons
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        goToPage(parseInt(btn.dataset.page));
+                    });
+                });
+            }
+            
+            // Go to specific page
+            function goToPage(page) {
+                if (page < 1 || page > totalPages) return;
+                
+                // Hide current page
+                document.querySelector('.quiz-page.active').classList.remove('active');
+                
+                // Show new page
+                document.getElementById(`page${page}`).classList.add('active');
+                
+                // Update pagination buttons
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.page) === page);
+                });
+                
+                currentPage = page;
+                
+                // Update navigation buttons
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+            }
+            
+            // Initialize quiz
+            generateQuiz();
+            
+            // Navigation buttons
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
+            });
+            
+            // Enable/disable navigation buttons initially
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+            
+            // Apply dark mode if saved
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) {
+                    darkModeToggle.querySelector('.dark').style.display = 'inline';
+                    darkModeToggle.querySelector('.no-dark').style.display = 'none';
+                }
+            } else if (darkModeToggle) {
+                darkModeToggle.querySelector('.dark').style.display = 'none';
+                darkModeToggle.querySelector('.no-dark').style.display = 'inline';
+            }
+            
+            // Load saved notes
+            if (personalNotes) {
+                personalNotes.value = savedNotes;
+            }
+            
+            // Module Navigation with event delegation for better performance
+            if (moduleList) {
+                moduleList.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('module-item')) {
+                        const clickedItem = e.target;
+                        
+                        // Update active module in sidebar
+                        moduleItems.forEach(item => item.classList.remove('active'));
+                        clickedItem.classList.add('active');
+                        
+                        // Show selected content section
+                        const targetModule = clickedItem.getAttribute('data-module');
+                        contentSections.forEach(section => {
+                            section.classList.remove('active');
+                            if (section.id === targetModule) {
+                                section.classList.add('active');
+                                
+                                // Update progress (simplified for demo)
+                                if (targetModule !== 'home' && targetModule !== 'dashboard') {
+                                    const moduleIndex = Array.from(moduleItems).findIndex(i => i.getAttribute('data-module') === targetModule);
+                                    const progress = Math.min(100, Math.max(25, moduleIndex * 15));
+                                    if (globalProgress) globalProgress.style.width = `${progress}%`;
+                                    if (progressStat) progressStat.textContent = `${progress}%`;
+                                }
+                            }
+                        });
+                        
+                        // Save progress
+                        localStorage.setItem('currentModule', targetModule);
+                    }
+                });
+            }
+            
+            // Mindmap Navigation
+            mindmapNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    const targetModule = node.getAttribute('data-module');
+                    const targetItem = document.querySelector(`.module-item[data-module="${targetModule}"]`);
+                    if (targetItem) {
+                        // Trigger the click on the module item
+                        targetItem.click();
+                    }
+                });
+            });
+            
+            if (mindmapCenter) {
+                mindmapCenter.addEventListener('click', () => {
+                    const homeItem = document.querySelector('.module-item[data-module="home"]');
+                    if (homeItem) homeItem.click();
+                });
+            }
+            
+            // Flashcard Functionality
+            if (flashcard) {
+                flashcard.addEventListener('click', () => {
+                    flashcard.classList.toggle('flipped');
+                });
+            }
+            
+            // Quiz Functionality with event delegation
+            quizContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('quiz-option')) {
+                    const option = e.target;
+                    const optionsContainer = option.closest('.quiz-container').querySelector('.quiz-options');
+                    
+                    // Remove selected class from siblings
+                    optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    option.classList.add('selected');
+                    
+                    // Show feedback if answer is submitted
+                    if (answeredQuestions > 0) {
+                        showFeedback(option);
+                    }
+                } else if (e.target.classList.contains('hint-btn')) {
+                    const hintBtn = e.target;
+                    const feedbackEl = hintBtn.previousElementSibling;
+                    const questionIndex = Array.from(quizContainer.querySelectorAll('.quiz-container')).indexOf(hintBtn.closest('.quiz-container'));
+                    const questionData = quizData[questionIndex];
+                    
+                    if (feedbackEl && feedbackEl.textContent.trim() === '') {
+                        feedbackEl.textContent = questionData.hint;
+                        feedbackEl.style.display = 'block';
+                        feedbackEl.className = 'quiz-feedback feedback-incorrect';
+                    }
+                }
+            });
+            
+            // Submit Quiz
+            if (submitQuizBtn) {
+                submitQuizBtn.addEventListener('click', () => {
+                    score = 0;
+                    answeredQuestions = 0;
+                    
+                    // Check all questions across all pages
+                    quizData.forEach((question, index) => {
+                        const questionContainer = document.querySelectorAll('.quiz-container')[index];
+                        const selectedOption = questionContainer.querySelector('.quiz-option.selected');
+                        const feedbackEl = questionContainer.querySelector('.quiz-feedback');
+                        
+                        if (selectedOption) {
+                            answeredQuestions++;
+                            showFeedback(selectedOption, questionContainer, question.correctIndex);
+                            
+                            if (parseInt(selectedOption.dataset.index) === question.correctIndex) {
+                                score++;
+                            }
+                        }
+                    });
+                    
+                    // Update score display
+                    if (quizScoreDisplay) {
+                        quizScoreDisplay.textContent = `Score: ${score}/${answeredQuestions}`;
+                    }
+                    
+                    // Show completion message
+                    setTimeout(() => {
+                        const percentage = Math.round((score / totalQuestions) * 100);
+                        let message = `Quiz terminé ! Votre score est de ${score}/50 (${percentage}%).\n\n`;
+                        
+                        if (percentage >= 80) {
+                            message += "Excellent travail ! Vous maîtrisez parfaitement le contenu du cours.";
+                        } else if (percentage >= 60) {
+                            message += "Bon travail ! Vous avez de bonnes connaissances, mais quelques points méritent révision.";
+                        } else if (percentage >= 40) {
+                            message += "Des efforts sont nécessaires. Revoyez les modules concernés pour améliorer votre score.";
+                        } else {
+                            message += "Votre score est insuffisant. Je vous recommande de revoir l'intégralité du cours avant de repasser le quiz.";
+                        }
+                        
+                        alert(message);
+                    }, 300);
+                });
+            }
+            
+            function showFeedback(option, container, correctIndex) {
+                if (!container) container = option.closest('.quiz-container');
+                if (!container) return;
+                
+                const feedbackEl = container.querySelector('.quiz-feedback');
+                if (!feedbackEl) return;
+                
+                // Get question index from container position
+                const allContainers = document.querySelectorAll('.quiz-container');
+                const questionIndex = Array.from(allContainers).indexOf(container);
+                const questionData = quizData[questionIndex];
+                const isCorrect = parseInt(option.dataset.index) === (correctIndex !== undefined ? correctIndex : questionData.correctIndex);
+                
+                feedbackEl.textContent = isCorrect ? 
+                    `✅ Bonne réponse ! ${getExplanation(questionIndex)}` :
+                    `❌ Mauvaise réponse. La bonne réponse est : ${questionData.options[questionData.correctIndex]}\n\n${getExplanation(questionIndex)}`;
+                
+                feedbackEl.className = isCorrect ? 
+                    'quiz-feedback feedback-correct' : 
+                    'quiz-feedback feedback-incorrect';
+                
+                feedbackEl.style.display = 'block';
+            }
+            
+            function getExplanation(questionIndex) {
+                const explanations = [
+                    "Le PMI définit le projet comme une entreprise temporaire visant à créer un produit et/ou un service unique.",
+                    "La criticité d'un risque est calculée en multipliant sa gravité par sa fréquence d'occurrence.",
+                    "La méthode PERT permet d'identifier le chemin critique grâce à son réseau de tâches et ses calculs de durées.",
+                    "Dans le cadre logique, les résultats correspondent aux biens, services ou changements produits par le projet.",
+                    "L'identification des risques est la première étape de la gestion des risques, avant toute évaluation ou traitement.",
+                    "La phase de conception inclut la définition des objectifs, l'étude de faisabilité et le choix du chef de projet.",
+                    "Le cadre logique est un outil qui présente de manière structurée les objectifs, indicateurs, hypothèses et intervenants d'un projet.",
+                    "Le diagramme de Gantt utilise des barres horizontales pour représenter visuellement les tâches et leur enchaînement dans le temps.",
+                    "L'organisation matricielle implique un double reporting : les employés répondent à la fois à leur manager fonctionnel et au chef de projet.",
+                    "La phase de clôture est la dernière étape du cycle de vie d'un projet, incluant l'évaluation et la capitalisation des connaissances.",
+                    "Le plan d'affaires est le document conceptuel utilisé pour les projets à but lucratif, incluant plusieurs sous-dossiers thématiques.",
+                    "Selon le principe des quatre fonctions incompatibles, l'autorisation, la détention, l'enregistrement et le contrôle ne doivent jamais être cumulés.",
+                    "La méthode PERT permet d'identifier le chemin critique grâce à son réseau de tâches et ses calculs de durées optimistes, pessimistes et probables.",
+                    "La phase de réalisation est celle où les tâches sont exécutées et où le chef de projet gère les imprévus.",
+                    "L'objectif global est le niveau le plus élevé du cadre logique, représentant l'impact à long terme sur le développement.",
+                    "Le brainstorming des axes stratégiques est la première étape de la planification stratégique, permettant de générer des idées en équipe.",
+                    "La faisabilité financière concerne la disponibilité des budgets, l'origine des fonds et la couverture des dépenses du projet.",
+                    "La matrice des risques permet de prioriser les risques en fonction de leur gravité et de leur probabilité d'occurrence.",
+                    "Le document du projet est le document complet qui inclut la formulation, les objectifs, les activités, le cadre logique et bien plus encore.",
+                    "La phase de clôture inclut l'analyse des écarts entre ce qui était planifié et ce qui a été réalisé, pour tirer des enseignements.",
+                    "L'organisation hiérarchique est caractérisée par des lignes de commandement claires et une structure pyramidale classique.",
+                    "Les indicateurs KPI (Key Performance Indicators) sont des outils de suivi qui permettent de mesurer les performances du projet.",
+                    "La Gestion Axée sur les Résultats (GAR) met l'accent sur les résultats concrets plutôt que sur les activités réalisées.",
+                    "La sélection d'un consultant indépendant est une étape cruciale de l'évaluation finale pour garantir son objectivité.",
+                    "Le sous-dossier financier d'un plan d'affaires inclut les prévisions de trésorerie et le compte de résultat prévisionnel.",
+                    "La phase de planification inclut la définition détaillée des tâches, des ressources, des délais et des coûts du projet.",
+                    "Les activités sont le niveau le plus opérationnel du cadre logique, correspondant aux actions à mener pour obtenir les résultats.",
+                    "La méthode agile utilise des cycles courts (sprints) et une collaboration renforcée pour s'adapter aux changements.",
+                    "La faisabilité technique concerne les aspects techniques du projet, comme l'utilisation de techniques nouvelles ou les performances à obtenir.",
+                    "L'autorisation est la fonction qui consiste à valider les opérations, déterminant qui a le pouvoir de décision.",
+                    "Le diagramme de Gantt permet de visualiser les dépendances entre les tâches grâce à l'alignement des barres horizontales.",
+                    "La phase de conception inclut le choix du chef de projet, qui sera responsable de la conduite du projet.",
+                    "Le sous-dossier étude de marché inclut l'analyse concurrentielle et la segmentation client pour évaluer la viabilité commerciale.",
+                    "L'audit des comptes est une étape de la clôture de projet qui garantit la transparence financière et la conformité.",
+                    "L'organisation divisionnaire est basée sur des divisions ou filiales autonomes, souvent utilisée dans les grandes entreprises.",
+                    "La matrice des risques utilise une échelle de couleur (vert, jaune, orange, rouge) pour représenter visuellement les niveaux de risque.",
+                    "Les objectifs spécifiques sont situés entre l'objectif global et les résultats dans le cadre logique, représentant les effets directs attendus.",
+                    "La méthode PERT utilise un réseau de tâches avec des durées optimistes, pessimistes et probables pour gérer les incertitudes.",
+                    "La phase de réalisation inclut la coordination de l'équipe projet par le chef de projet pour assurer l'exécution des tâches.",
+                    "Le sous-dossier technique d'un plan d'affaires décrit les processus de production et les équipements nécessaires.",
+                    "L'enregistrement est la fonction qui consiste à tenir les comptes et les registres, essentielle pour la traçabilité.",
+                    "La matrice RACI est un outil qui permet de définir les responsabilités dans un projet (Responsable, Accountable, Consulté, Informé).",
+                    "La prévention est l'étape de la gestion des risques qui vise à réduire la fréquence d'occurrence des risques.",
+                    "La faisabilité calendaire concerne l'évaluation des durées réalistes et le respect des délais du projet.",
+                    "La phase de clôture inclut la capitalisation des connaissances pour tirer des enseignements des succès et des échecs du projet.",
+                    "Le sous-dossier économique et social évalue l'impact du projet sur l'emploi et sa responsabilité sociétale.",
+                    "L'ingénierie concourante utilise la métaphore du 'rugby' pour décrire son approche collaborative, contrairement à la 'course de relais' du modèle séquentiel.",
+                    "Tous les niveaux du cadre logique (objectif global, objectifs spécifiques, résultats, activités) sont validés par des indicateurs objectivement vérifiables.",
+                    "Le règlement des désaccords avec les parties prenantes est une étape importante de la clôture pour garantir l'acceptation des conclusions.",
+                    "Le contrôle est la fonction qui consiste à vérifier les opérations pour garantir leur qualité et leur conformité."
+                ];
+                
+                return explanations[questionIndex] || "";
+            }
+            
+            // Dark Mode Toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', () => {
+                    darkMode = !darkMode;
+                    document.body.classList.toggle('dark-mode', darkMode);
+                    
+                    if (darkMode) {
+                        darkModeToggle.querySelector('.dark').style.display = 'inline';
+                        darkModeToggle.querySelector('.no-dark').style.display = 'none';
+                    } else {
+                        darkModeToggle.querySelector('.dark').style.display = 'none';
+                        darkModeToggle.querySelector('.no-dark').style.display = 'inline';
+                    }
+                    
+                    localStorage.setItem('darkMode', darkMode);
+                });
+            }
+            
+            // Save Notes
+            if (personalNotes) {
+                personalNotes.addEventListener('input', () => {
+                    localStorage.setItem('courseNotes', personalNotes.value);
+                });
+            }
+            
+            // Export Functionality (simulated)
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    alert('Fonctionnalité d\'export PDF activée.\n\nDans une version complète, cette fonction générerait un PDF de vos notes, du contenu du module actuel et de votre progression.');
+                });
+            }
+            
+            // Notes Button
+            if (notesBtn) {
+                notesBtn.addEventListener('click', () => {
+                    const dashboardItem = document.querySelector('.module-item[data-module="dashboard"]');
+                    if (dashboardItem) {
+                        dashboardItem.click();
+                        setTimeout(() => {
+                            if (personalNotes) {
+                                personalNotes.scrollIntoView({behavior: 'smooth'});
+                            }
+                        }, 300);
+                    }
+                });
+            }
+            
+            // Search Functionality (simplified)
+            if (courseSearch) {
+                courseSearch.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    moduleItems.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    });
+                });
+            }
+            
+            // Initialize progress from localStorage
+            const savedProgress = localStorage.getItem('courseProgress');
+            if (savedProgress && globalProgress) {
+                globalProgress.style.width = savedProgress;
+                if (progressStat) progressStat.textContent = savedProgress;
+            }
+            
+            // Save progress when leaving page
+            window.addEventListener('beforeunload', () => {
+                if (globalProgress) {
+                    localStorage.setItem('courseProgress', globalProgress.style.width);
+                }
+            });
+            
+            // Initialize accordions
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const isActive = header.classList.contains('active');
+                    
+                    // Close all other accordions
+                    document.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('active'));
+                    document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('show'));
+                    
+                    // Toggle current accordion
+                    if (!isActive) {
+                        header.classList.add('active');
+                        content.classList.add('show');
+                    }
+                });
+            });
+            
+            // Initialize with home module active
+            const homeItem = document.querySelector('.module-item[data-module="home"]');
+            if (homeItem && !homeItem.classList.contains('active')) {
+                homeItem.click();
+            }
+        });
+    </script>
+</body>
+</html>
+
